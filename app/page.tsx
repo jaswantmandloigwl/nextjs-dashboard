@@ -4,8 +4,6 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import styles from '@/app/ui/home.module.css';
 import clsx from 'clsx';
-import alasql from 'alasql/dist/alasql.min';
-import { useEffect } from 'react';
 import Image from 'next/image';
 
 
@@ -14,9 +12,6 @@ export default function Page() {
 
   const classes = clsx("flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52");
 
-  useEffect(() => {
-    testIdexedDb();
-  }, []);
 
   return (
     <main className="flex min-h-screen flex-col p-6">
@@ -50,38 +45,4 @@ export default function Page() {
       </div>
     </main>
   );
-}
-
-const cityData = [{ city: "Redmond", population: 57530 },
-{ city: "Atlanta", population: 447841 },
-{ city: "San Fracisco", population: 837442 }];
-
-async function testIdexedDb() {
-
-  const dbRes = await runSql('CREATE INDEXEDDB DATABASE IF NOT EXISTS geo;\
-    ATTACH INDEXEDDB DATABASE geo; \
-    USE geo; \
-    CREATE TABLE IF NOT EXISTS cities; \
-    SELECT * INTO cities FROM ?', [cityData]);
-
-  console.log({ dbRes });
-
-  const insertRes = await runSql('SELECT * INTO cities FROM ? ', [cityData]);
-
-  console.log({ insertRes });
-
-  const selectRes = await runSql('SELECT  city  FROM cities WHERE population > 100000 ORDER BY city DESC');
-
-  console.log({ selectRes });
-
-}
-
-async function runSql(sql: string, params: any[] = []) {
-  const res = await new Promise((resolve, reject) => {
-    alasql(sql, params, function (res) {
-      resolve(res);
-    });
-  });
-
-  return res;
 }
